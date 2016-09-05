@@ -1,4 +1,13 @@
-
+"""
+Add the Hive, Impala and Hue Groups to Sentry's Admin Groups
+1. Go to the Sentry service.
+2. Click the Configuration tab.
+3. Select Scope > Sentry (Service-Wide).
+4. Select Category > Main.
+5. Locate the Admin Groups property and add the hive, impala and hue groups to the list.
+If an end user is in one of these admin groups, that user has administrative privileges on the Sentry Server.
+6. Click Save Changes to commit the changes.
+"""
 class SentryAPIClient:
     def __init__(self, sentry_service):
         self.service = sentry_service
