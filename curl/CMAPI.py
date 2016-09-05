@@ -1,6 +1,7 @@
 import pycurl
 import json
 from StringIO import StringIO
+import importlib
 
 class CMAPI:
     def __init__(self, host, username, password):
@@ -94,7 +95,7 @@ class CMAPI:
             if service.upper() in self.service_names:
                 className = service + "CMAPIClient"
 
-                module = __import__(className)
+                module = importlib.import_module('api.'+className)
                 class_ = getattr(module, className)
                 client = class_(self)
 
