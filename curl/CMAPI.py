@@ -19,12 +19,14 @@ class CMAPI:
         self.cluster_name = None
         self.service_names = {}
         self.service_type = None
+        self.version = 12
         self.init()
 
     def init(self):
+        self.version = self.get_version()
         self.api_url = "{0}/api/{1}".format(
             self.host,
-            self.get_version()
+            self.version
         )
 
         self.cluster_name = self.get_cluster_name()

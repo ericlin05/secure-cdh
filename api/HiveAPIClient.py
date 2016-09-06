@@ -28,7 +28,7 @@ class HiveAPIClient:
         for role_group in role_groups:
             if str(role_group.name).find('HIVESERVER2') > 0:
                 role_group.update_config({
-                        'hiveserver2_enable_impersonation': True
+                        'hiveserver2_enable_impersonation': False
                     })
                 break
 

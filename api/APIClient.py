@@ -1,10 +1,11 @@
 from cm_api.api_client import ApiResource
 from cm_api.api_client import API_CURRENT_VERSION
-from HiveAPIClient import HiveAPIClient
 import importlib
 
 class APIClient:
-    def __init__(self, cm_host, cm_user, cm_pass, version=API_CURRENT_VERSION):
+    def __init__(self, cm_host, cm_user, cm_pass,
+                 version=API_CURRENT_VERSION,
+                 cluster_name=None):
         self.SERVICE_HIVE   = 'HIVE'
         self.SERVICE_HUE    = 'HUE'
         self.SERVICE_IMPALA = 'IMPALA'
@@ -21,7 +22,9 @@ class APIClient:
         self.cluster = None
         self.services = {}
         for c in self.api.get_all_clusters():
-            self.cluster = c
+            if cluster_name is None or cluster_name == c.name:
+                self.cluster = c
+                break
 
         for service in self.cluster.get_all_services():
             self.services[service.type] = service
@@ -41,3 +44,4 @@ class APIClient:
                 class_ = getattr(module, className)
                 client = class_(self.services[s_name])
                 client.enable_sentry()
+
