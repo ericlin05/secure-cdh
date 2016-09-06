@@ -1,0 +1,81 @@
+from cm_api.api_client import ApiResource
+from api.APIClient import APIClient
+from curl.CMAPI import CMAPI
+from argparse import ArgumentParser
+import time
+
+arg_parser = ArgumentParser(description='This script enables Sentry for a given cluster in CM')
+arg_parser.add_argument('cm_host', action="store",
+                        help='The full CM host URL including the port number at the end')
+arg_parser.add_argument('cm_user', action="store",
+                        help='The username to log into CM')
+arg_parser.add_argument('cm_pass', action="store",
+                        help='The password to log into CM')
+
+arg_parser.add_argument('kdc_master', action="store",
+                        help='The KDC master hostname')
+
+arg_parser.add_argument('--kdc_admin_user', action="store", default="cloudera-scm/admin", dest="kdc_admin_user",
+                        help='The KDC admin user pricipal, default to "cloudera-scm/admin"')
+arg_parser.add_argument('--kdc_pass', action="store", default="cloudera", dest="kdc_pass",
+                        help='The KDC admin principal password, default to "cloudera"')
+arg_parser.add_argument('--krb_realm', action="store", default="HADOOP", dest="krb_realm",
+                        help='The KDC REALM, default to HADOOP')
+arg_parser.add_argument('--cluster_name', action="store", dest="cluster_name",
+                        help='The name of the cluster you want to update, default to "None"')
+
+args = arg_parser.parse_args()
+
+# def load_host_config_files(host_conf_dir):
+#     with open( & amp;amp;quot; % s / host_configuration.json & amp;amp" % host_conf_dir) as cluster_config_file:
+#     cluster_configs = json.load(cluster_config_file)
+#     return cluster_configs
+
+
+# use the CURL class to determine the VERSION number first
+curl_api = CMAPI(args.cm_host+":7180", args.cm_user, args.cm_pass)
+
+client = APIClient(
+    args.cm_host, args.cm_user, args.cm_pass,
+    version=str(curl_api.version)[1:],
+    cluster_name=args.cluster_name
+)
+
+cm = client.api.get_cloudera_manager()
+cm.update_config({
+    'SECURITY_REALM': '%s' % args.krb_realm,
+    'KDC_HOST': '%s' % args.kdc_master,
+    "KRB_MANAGE_KRB5_CONF": "value",
+    "KDC_TYPE": "MIT KDC"
+})
+
+# import the credentials
+print "Importing Credentials.."
+cm.import_admin_credentials(args.kdc_admin_user, args.kdc_pass).wait()
+
+print "Updating service configs for kerberos.."
+client.enable_kerberos()
+
+while True:
+    gcl = filter(lambda x: x.name == "GenerateCredentials" and x.active is True, cm.get_commands())
+    if len(gcl) == 0:
+        break
+    time.sleep(5)
+
+print "Deploying client configurations.."
+cmd = client.cluster.deploy_client_config()
+if not cmd.wait().success:
+    raise Exception("Failed to deploy client configurations")
+
+print "Restarting Cloudera Management services.."
+cmd = cm.get_service().restart()
+if not cmd.wait().success:
+    raise Exception("Failed to start Management services!")
+
+print "Restarting cluster"
+cmd = client.cluster.restart()
+
+if not cmd.wait().success:
+    raise Exception("Failed to restart Cluster")
+print "Done."
+

@@ -1,26 +1,28 @@
-"""
-Enabling the Sentry Service for Hive
-1. Go to the Hive service.
-2. Click the Configuration tab.
-3. Select Scope > Hive (Service-Wide).
-4. Select Category > Main.
-5. Locate the Sentry Service property and select Sentry.
-6. Click Save Changes to commit the changes.
-Restart the Hive service.
 
-Disable impersonation for HiveServer2 in the Cloudera Manager Admin Console:
-1. Go to the Hive service.
-2. Click the Configuration tab.
-3. Select Scope > HiveServer2.
-4. Select Category > Main.
-5. Uncheck the HiveServer2 Enable Impersonation checkbox.
-6. Click Save Changes to commit the changes.
-"""
 class HiveAPIClient:
+
     def __init__(self, hive_service):
         self.service = hive_service
 
     def enable_sentry(self):
+        """
+        Enabling the Sentry Service for Hive
+        1. Go to the Hive service.
+        2. Click the Configuration tab.
+        3. Select Scope > Hive (Service-Wide).
+        4. Select Category > Main.
+        5. Locate the Sentry Service property and select Sentry.
+        6. Click Save Changes to commit the changes.
+        Restart the Hive service.
+
+        Disable impersonation for HiveServer2 in the Cloudera Manager Admin Console:
+        1. Go to the Hive service.
+        2. Click the Configuration tab.
+        3. Select Scope > HiveServer2.
+        4. Select Category > Main.
+        5. Uncheck the HiveServer2 Enable Impersonation checkbox.
+        6. Click Save Changes to commit the changes.
+        """
         self.service.update_config({'sentry_service': 'sentry'})
         self.service.update_config({'sentry_enabled': False})
 

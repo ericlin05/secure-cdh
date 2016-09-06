@@ -1,29 +1,30 @@
-"""
-If you are using MapReduce, enable the Hive user to submit MapReduce jobs.
-1. Open the Cloudera Manager Admin Console and go to the MapReduce service.
-2. Click the Configuration tab.
-3. Select Scope > TaskTracker.
-4. Select Category > Security.
-5. Set the Minimum User ID for Job Submission property to zero (the default is 1000).
-6. Click Save Changes to commit the changes.
-7. Repeat steps 1-6 for every TaskTracker role group for the MapReduce service that is associated with Hive.
-8. Restart the MapReduce service.
 
-If you are using YARN, enable the Hive user to submit YARN jobs.
-1. Open the Cloudera Manager Admin Console and go to the YARN service.
-2. Click the Configuration tab.
-3. Select Scope > NodeManager.
-4. Select Category > Security.
-5. Ensure the Allowed System Users property includes the hive user. If not, add hive.
-6. Click Save Changes to commit the changes.
-7. Repeat steps 1-6 for every NodeManager role group for the YARN service that is associated with Hive.
-8. Restart the YARN service.
-"""
 class YarnAPIClient:
     def __init__(self, yarn_service):
         self.service = yarn_service
 
     def enable_sentry(self):
+        """
+        If you are using MapReduce, enable the Hive user to submit MapReduce jobs.
+        1. Open the Cloudera Manager Admin Console and go to the MapReduce service.
+        2. Click the Configuration tab.
+        3. Select Scope > TaskTracker.
+        4. Select Category > Security.
+        5. Set the Minimum User ID for Job Submission property to zero (the default is 1000).
+        6. Click Save Changes to commit the changes.
+        7. Repeat steps 1-6 for every TaskTracker role group for the MapReduce service that is associated with Hive.
+        8. Restart the MapReduce service.
+
+        If you are using YARN, enable the Hive user to submit YARN jobs.
+        1. Open the Cloudera Manager Admin Console and go to the YARN service.
+        2. Click the Configuration tab.
+        3. Select Scope > NodeManager.
+        4. Select Category > Security.
+        5. Ensure the Allowed System Users property includes the hive user. If not, add hive.
+        6. Click Save Changes to commit the changes.
+        7. Repeat steps 1-6 for every NodeManager role group for the YARN service that is associated with Hive.
+        8. Restart the YARN service.
+        """
         role_groups = self.service.get_all_role_config_groups()
         for role_group in role_groups:
             if str(role_group.name).find('NODEMANAGE') > 0:

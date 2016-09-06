@@ -11,6 +11,9 @@ class APIClient:
         self.SERVICE_IMPALA = 'IMPALA'
         self.SERVICE_SOLR   = 'SOLR'
         self.SERVICE_YARN   = 'YARN'
+        self.SERVICE_HDFS   = 'HDFS'
+        self.SERVICE_HBASE  = 'HBASE'
+        self.SERVICE_ZK     = 'ZOOKEEPER'
 
         self.api = ApiResource(
             cm_host,
@@ -45,3 +48,18 @@ class APIClient:
                 client = class_(self.services[s_name])
                 client.enable_sentry()
 
+    def enable_kerberos(self):
+        service_list = [
+            self.SERVICE_HDFS,
+            self.SERVICE_ZK,
+            self.SERVICE_HBASE,
+            self.SERVICE_SOLR
+        ]
+
+        for s_name in service_list:
+            if s_name in self.services:
+                className = s_name.capitalize() + "APIClient"
+                module = importlib.import_module("api."+className)
+                class_ = getattr(module, className)
+                client = class_(self.services[s_name])
+                client.enable_kerberos()
