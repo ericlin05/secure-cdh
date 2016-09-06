@@ -33,4 +33,3 @@ class HiveAPIClient:
                         'hiveserver2_enable_impersonation': False
                     })
                 break
-

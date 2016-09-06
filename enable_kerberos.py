@@ -15,8 +15,8 @@ arg_parser.add_argument('cm_pass', action="store",
 arg_parser.add_argument('kdc_master', action="store",
                         help='The KDC master hostname')
 
-arg_parser.add_argument('--kdc_admin_user', action="store", default="cloudera-scm/admin", dest="kdc_admin_user",
-                        help='The KDC admin user pricipal, default to "cloudera-scm/admin"')
+arg_parser.add_argument('--kdc_admin_user', action="store", default="cloudera-scm/admin@HADOOP", dest="kdc_admin_user",
+                        help='The KDC admin user pricipal, default to "cloudera-scm/admin@HADOOP"')
 arg_parser.add_argument('--kdc_pass', action="store", default="cloudera", dest="kdc_pass",
                         help='The KDC admin principal password, default to "cloudera"')
 arg_parser.add_argument('--krb_realm', action="store", default="HADOOP", dest="krb_realm",
@@ -45,7 +45,7 @@ cm = client.api.get_cloudera_manager()
 cm.update_config({
     'SECURITY_REALM': '%s' % args.krb_realm,
     'KDC_HOST': '%s' % args.kdc_master,
-    "KRB_MANAGE_KRB5_CONF": "value",
+    "KRB_MANAGE_KRB5_CONF": True,
     "KDC_TYPE": "MIT KDC"
 })
 
@@ -56,11 +56,15 @@ cm.import_admin_credentials(args.kdc_admin_user, args.kdc_pass).wait()
 print "Updating service configs for kerberos.."
 client.enable_kerberos()
 
-while True:
-    gcl = filter(lambda x: x.name == "GenerateCredentials" and x.active is True, cm.get_commands())
-    if len(gcl) == 0:
-        break
-    time.sleep(5)
+print "Deploying the Cluster's Kerberos client configuration.."
+cmd = client.cluster.deploy_cluster_client_config()
+if not cmd.wait().success:
+    raise Exception("Failed to deploy Cluster's Kerberos client configuration")
+
+print "Generating Credentials"
+cmd = cm.generate_credentials()
+if not cmd.wait().success:
+    raise Exception("Failed to generating credentials!")
 
 print "Deploying client configurations.."
 cmd = client.cluster.deploy_client_config()

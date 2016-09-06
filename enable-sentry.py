@@ -42,4 +42,10 @@ api = APIClient(
     version=str(curl_api.version)[1:],
     cluster_name=args.cluster_name)
 api.enable_sentry()
-api.cluster.restart()
+
+print "Restarting cluster.."
+cmd = api.cluster.restart()
+if not cmd.wait().success:
+    raise Exception("Failed to restart cluster")
+
+print "Done."
