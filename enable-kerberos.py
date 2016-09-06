@@ -26,12 +26,6 @@ arg_parser.add_argument('--cluster_name', action="store", dest="cluster_name",
 
 args = arg_parser.parse_args()
 
-# def load_host_config_files(host_conf_dir):
-#     with open( & amp;amp;quot; % s / host_configuration.json & amp;amp" % host_conf_dir) as cluster_config_file:
-#     cluster_configs = json.load(cluster_config_file)
-#     return cluster_configs
-
-
 # use the CURL class to determine the VERSION number first
 curl_api = CMAPI(args.cm_host+":7180", args.cm_user, args.cm_pass)
 

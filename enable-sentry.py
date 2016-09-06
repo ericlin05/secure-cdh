@@ -19,20 +19,32 @@ The Hive warehouse directory (/user/hive/warehouse or any path you specify as hi
 in your hive-site.xml) must be owned by the Hive user and group.
 """
 
-status = subprocess.call("kinit hdfs")
+print
+"""
+Please enter the \"hdfs\" principal password so that
+we can update some HDFS directory permissions
+"""
+status = subprocess.call("kinit hdfs", shell=True)
 
 if status != 0:
     sys.exit(status=status)
 
-subprocess.call("hdfs dfs -chmod -R 771 /user/hive/warehouse")
-status = subprocess.call("hdfs dfs -chown -R hive:hive /user/hive/warehouse")
+print "Updating /user/hive/warehouse directory permissions 771"
+status = subprocess.call("hdfs dfs -chmod -R 771 /user/hive/warehouse", shell=True)
+if status != 0:
+    message = """Unable to execute command:
+hdfs dfs -chmod -R 771 /user/hive/warehouse
+    """
+    raise Exception(message)
+
+print "Updating /user/hive/warehouse ownership to hive:hive"
+status = subprocess.call("hdfs dfs -chown -R hive:hive /user/hive/warehouse", shell=True)
 
 if status != 0:
-    print """Unable to execute command:
-hdfs dfs -chmod -R 771 /user/hive/warehouse
+    message = """Unable to execute command:
 hdfs dfs -chown -R hive:hive /user/hive/warehouse
     """
-    sys.exit(status=status)
+    raise Exception(message)
 
 # use the CURL class to determine the VERSION number first
 curl_api = CMAPI(args.cm_host+":7180", args.cm_user, args.cm_pass)
@@ -40,7 +52,8 @@ curl_api = CMAPI(args.cm_host+":7180", args.cm_user, args.cm_pass)
 api = APIClient(
     args.cm_host, args.cm_user, args.cm_pass,
     version=str(curl_api.version)[1:],
-    cluster_name=args.cluster_name)
+    cluster_name=args.cluster_name
+)
 api.enable_sentry()
 
 print "Restarting cluster.."
