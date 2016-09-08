@@ -12,8 +12,11 @@ arg_parser.add_argument('--cm-pass', action="store", dest="cm_pass", default="ad
                         help='The password to log into CM')
 arg_parser.add_argument('--cluster-name', action="store", dest="cluster_name",
                         help='The name of the cluster you want to update')
-arg_parser.add_argument('--skip-hdfs-cmd', action="store", dest="skip_hdfs_cmd", default=True,
+arg_parser.add_argument('--skip-hdfs-update', action="store_false", dest="hdfs_update",
                         help='The name of the cluster you want to update')
+arg_parser.add_argument('--hdfs-update', action="store_true", dest="hdfs_update",
+                        help='The name of the cluster you want to update')
+arg_parser.set_defaults(hdfs_update=True)
 args = arg_parser.parse_args()
 
 """
@@ -21,7 +24,7 @@ The Hive warehouse directory (/user/hive/warehouse or any path you specify as hi
 in your hive-site.xml) must be owned by the Hive user and group.
 """
 
-if not args.skip_hdfs_cmd:
+if args.hdfs_update:
     print
     """
     Please enter the \"hdfs\" principal password so that
@@ -52,6 +55,9 @@ if not args.skip_hdfs_cmd:
 # use the CURL class to determine the VERSION number first
 curl_api = CMAPI(args.cm_host+":7180", args.cm_user, args.cm_pass)
 
+print "Current CM API version: " + curl_api.version
+
+print "Updating CM configurations.."
 api = APIClient(
     args.cm_host, args.cm_user, args.cm_pass,
     version=str(curl_api.version)[1:],
@@ -62,6 +68,13 @@ if not api.has_sentry():
     raise Exception("No sentry service found, please add Sentry first!!")
 
 api.enable_sentry()
+print "Finished updating CM configurations"
+
+print "Deploying client configurations.."
+cmd = api.cluster.deploy_client_config()
+if not cmd.wait().success:
+    raise Exception("Failed to deploy client configurations")
+
 
 print "Restarting cluster.."
 cmd = api.cluster.restart()
