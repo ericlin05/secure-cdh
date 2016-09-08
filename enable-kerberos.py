@@ -1,15 +1,13 @@
-from cm_api.api_client import ApiResource
 from api.APIClient import APIClient
 from curl.CMAPI import CMAPI
 from argparse import ArgumentParser
-import time
 
 arg_parser = ArgumentParser(description='This script enables Sentry for a given cluster in CM')
 arg_parser.add_argument('cm_host', action="store",
                         help='The full CM host URL including the port number at the end')
-arg_parser.add_argument('cm_user', action="store",
+arg_parser.add_argument('--cm_user', action="store", dest="cm_user", default="admin",
                         help='The username to log into CM')
-arg_parser.add_argument('cm_pass', action="store",
+arg_parser.add_argument('--cm_pass', action="store", dest="cm_pass", default="admin",
                         help='The password to log into CM')
 
 arg_parser.add_argument('kdc_master', action="store",
