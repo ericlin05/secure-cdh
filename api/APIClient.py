@@ -14,6 +14,7 @@ class APIClient:
         self.SERVICE_HDFS   = 'HDFS'
         self.SERVICE_HBASE  = 'HBASE'
         self.SERVICE_ZK     = 'ZOOKEEPER'
+        self.SERVICE_SENTRY = 'SENTRY'
 
         self.api = ApiResource(
             cm_host,
@@ -31,6 +32,13 @@ class APIClient:
 
         for service in self.cluster.get_all_services():
             self.services[service.type] = service
+
+    def has_sentry(self):
+        """
+        This function checks if sentry service is available in the cluster
+        :return: boolean
+        """
+        return self.SERVICE_SENTRY in self.services
 
     def enable_sentry(self):
         service_list = [

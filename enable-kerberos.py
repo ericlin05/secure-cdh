@@ -5,21 +5,21 @@ from argparse import ArgumentParser
 arg_parser = ArgumentParser(description='This script enables Sentry for a given cluster in CM')
 arg_parser.add_argument('cm_host', action="store",
                         help='The full CM host URL including the port number at the end')
-arg_parser.add_argument('--cm_user', action="store", dest="cm_user", default="admin",
+arg_parser.add_argument('--cm-user', action="store", dest="cm_user", default="admin",
                         help='The username to log into CM')
-arg_parser.add_argument('--cm_pass', action="store", dest="cm_pass", default="admin",
+arg_parser.add_argument('--cm-pass', action="store", dest="cm_pass", default="admin",
                         help='The password to log into CM')
 
 arg_parser.add_argument('kdc_master', action="store",
                         help='The KDC master hostname')
 
-arg_parser.add_argument('--kdc_admin_user', action="store", default="cloudera-scm/admin@HADOOP", dest="kdc_admin_user",
+arg_parser.add_argument('--kdc-admin-user', action="store", default="cloudera-scm/admin@HADOOP", dest="kdc_admin_user",
                         help='The KDC admin user pricipal, default to "cloudera-scm/admin@HADOOP"')
-arg_parser.add_argument('--kdc_pass', action="store", default="cloudera", dest="kdc_pass",
+arg_parser.add_argument('--kdc-pass', action="store", default="cloudera", dest="kdc_pass",
                         help='The KDC admin principal password, default to "cloudera"')
-arg_parser.add_argument('--krb_realm', action="store", default="HADOOP", dest="krb_realm",
+arg_parser.add_argument('--krb-realm', action="store", default="HADOOP", dest="krb_realm",
                         help='The KDC REALM, default to HADOOP')
-arg_parser.add_argument('--cluster_name', action="store", dest="cluster_name",
+arg_parser.add_argument('--cluster-name', action="store", dest="cluster_name",
                         help='The name of the cluster you want to update, default to "None"')
 
 args = arg_parser.parse_args()

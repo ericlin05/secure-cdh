@@ -27,17 +27,18 @@ python enable-sentry.py -h
 
 
 ```
-python enable-kerberos.py   --cluster_name <cluster_name> \
-                            --cm_user <cm-user> \
-                            --cm_pass <cm-pass> \
-                            <cm-host> <kdc-host>
+python enable-kerberos.py   --cluster-name <cluster-name> \
+                            --cm-user <cm-user> \
+                            --cm-pass <cm-pass> \
+                            <cm-host>
+                            <kdc-host>
 ```
 
 ### Enable Sentry (requires Kerberos to be enabled first, need to add checking later on)
 
 ```
-python enable-sentry.py --cluster_name <cluster_name> \
-                        --cm_user <cm-user> \
-                        --cm_pass <cm-pass> \
+python enable-sentry.py --cluster-name <cluster_name> \
+                        --cm-user <cm-user> \
+                        --cm-pass <cm-pass> \
                         <cm-host>
 ```
