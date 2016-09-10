@@ -1,4 +1,4 @@
-# secure-cdh
+# Enabling Kerberos and Sentry in CDH using CM API
 
 ## Prerequisite
 
@@ -24,7 +24,6 @@ python enable-sentry.py -h
 ```
 
 ### Enable Kerberos first
-
 
 ```
 python enable-kerberos.py   --cluster-name <cluster-name> \

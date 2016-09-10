@@ -35,10 +35,10 @@ client = APIClient(
 
 cm = client.api.get_cloudera_manager()
 cm.update_config({
-    'SECURITY_REALM': '%s' % args.krb_realm,
-    'KDC_HOST': '%s' % args.kdc_master,
-    "KRB_MANAGE_KRB5_CONF": True,
-    "KDC_TYPE": "MIT KDC"
+    'SECURITY_REALM'        : '%s' % args.krb_realm,
+    'KDC_HOST'              : '%s' % args.kdc_master,
+    "KRB_MANAGE_KRB5_CONF"  : True,
+    "KDC_TYPE"              : "MIT KDC"
 })
 
 # import the credentials

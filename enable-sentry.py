@@ -3,6 +3,11 @@ from api.APIClient import APIClient
 from curl.CMAPI import CMAPI
 from argparse import ArgumentParser
 
+"""
+This script follows the instructions on the following page to enable Sentry in CDH using CM API:
+http://www.cloudera.com/documentation/enterprise/latest/topics/sg_sentry_service_config.html
+"""
+
 arg_parser = ArgumentParser(description='This script enables Sentry for a given cluster in CM')
 arg_parser.add_argument('cm_host', action="store",
                         help='The full CM host URL including the port number at the end')
@@ -13,9 +18,9 @@ arg_parser.add_argument('--cm-pass', action="store", dest="cm_pass", default="ad
 arg_parser.add_argument('--cluster-name', action="store", dest="cluster_name",
                         help='The name of the cluster you want to update')
 arg_parser.add_argument('--skip-hdfs-update', action="store_false", dest="hdfs_update",
-                        help='The name of the cluster you want to update')
+                        help='Do not trigger "hdfs" commands to update hive warehouse')
 arg_parser.add_argument('--hdfs-update', action="store_true", dest="hdfs_update",
-                        help='The name of the cluster you want to update')
+                        help='Trigger "hdfs" commands to update hive warehouse\'s permissions')
 arg_parser.set_defaults(hdfs_update=True)
 args = arg_parser.parse_args()
 
@@ -25,11 +30,7 @@ in your hive-site.xml) must be owned by the Hive user and group.
 """
 
 if args.hdfs_update:
-    print
-    """
-    Please enter the \"hdfs\" principal password so that
-    we can update some HDFS directory permissions
-    """
+    print "Please enter the \"hdfs\" principal password so that we can update some HDFS directory permissions"
     status = subprocess.call("kinit hdfs", shell=True)
 
     if status != 0:
