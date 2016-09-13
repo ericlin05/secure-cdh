@@ -21,7 +21,19 @@ class ImpalaAPIClient:
         self.service.update_config({'sentry_enabled': False})
 
     def enable_load_balancer(self, host):
-        self.service.update_config({'impalad_load_balancer': "%s:%s" % (host, self.DEFAULT_HAPROXY_PORT)})
+        role_groups = self.service.get_all_role_config_groups()
+        for role_group in role_groups:
+            if str(role_group.name).find('IMPALAD') > 0:
+                role_group.update_config({
+                    'impalad_load_balancer': "%s:%s" % (host, self.DEFAULT_HAPROXY_PORT)
+                })
+                break
 
     def disable_load_balancer(self):
-        self.service.update_config({'impalad_load_balancer': ""})
+        role_groups = self.service.get_all_role_config_groups()
+        for role_group in role_groups:
+            if str(role_group.name).find('IMPALAD') > 0:
+                role_group.update_config({
+                    'impalad_load_balancer': ""
+                })
+                break
