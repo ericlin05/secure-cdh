@@ -1,5 +1,7 @@
 from cm_api.api_client import ApiResource
 from cm_api.api_client import API_CURRENT_VERSION
+from ImpalaAPIClient import ImpalaAPIClient
+
 import importlib
 
 class APIClient:
@@ -40,6 +42,16 @@ class APIClient:
         """
         return self.SERVICE_SENTRY in self.services
 
+    def get_impala_service(self):
+        """
+        This function checks if sentry service is available in the cluster
+        :return: boolean
+        """
+        if self.SERVICE_IMPALA in self.services:
+            return self.services[self.SERVICE_IMPALA]
+
+        return None
+
     def enable_sentry(self):
         service_list = [
             self.SERVICE_HIVE,
@@ -71,3 +83,11 @@ class APIClient:
                 class_ = getattr(module, className)
                 client = class_(self.services[s_name])
                 client.enable_kerberos()
+
+    def enable_impala_vip(self, host):
+        impala_service = self.get_impala_service()
+        ImpalaAPIClient(impala_service).enable_load_balancer(host)
+
+    def disable_impala_vip(self):
+        impala_service = self.get_impala_service()
+        ImpalaAPIClient(impala_service).disable_load_balancer()

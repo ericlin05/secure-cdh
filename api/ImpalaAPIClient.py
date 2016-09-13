@@ -3,6 +3,7 @@ class ImpalaAPIClient:
 
     def __init__(self, impala_service):
         self.service = impala_service
+        self.DEFAULT_HAPROXY_PORT = 25003
 
     def enable_sentry(self):
         """
@@ -18,3 +19,9 @@ class ImpalaAPIClient:
         """
         self.service.update_config({'sentry_service': 'sentry'})
         self.service.update_config({'sentry_enabled': False})
+
+    def enable_load_balancer(self, host):
+        self.service.update_config({'impalad_load_balancer': "%s:%s" % (host, self.DEFAULT_HAPROXY_PORT)})
+
+    def disable_load_balancer(self):
+        self.service.update_config({'impalad_load_balancer': ""})
