@@ -2,34 +2,30 @@
 
 from api.APIClient import APIClient
 from curl.CMAPI import CMAPI
-from argparse import ArgumentParser
+from lib.CommonArgumentParser import CommonArgumentParser
 import os, shutil, subprocess, sys
 
-arg_parser = ArgumentParser(description='This script enables Sentry for a given cluster in CM')
-arg_parser.add_argument('cm_host', action="store",
-                        help='The full CM host URL including the port number at the end')
-arg_parser.add_argument('--cm-user', action="store", dest="cm_user", default="admin",
-                        help='The username to log into CM')
-arg_parser.add_argument('--cm-pass', action="store", dest="cm_pass", default="admin",
-                        help='The password to log into CM')
-
-arg_parser.add_argument('--cluster-name', action="store", dest="cluster_name",
-                        help='The name of the cluster you want to update, default to "None"')
+arg_parser = CommonArgumentParser(description='This script enabled Load Balancing for ' +
+                                              'Impala services for a given cluster in CM')
+arg_parser.init()
+arg_parser.add_argument('--skip-shell-command', action="store_false", dest="run_cmd",
+                        help='Whether or not to skip shell commands, like "yum install" etc.')
 
 args = arg_parser.parse_args()
 
-# Installing HAProxy server
-print "Installing HAProxy server"
-status = subprocess.call("yum install -y haproxy", shell=True)
-if status != 0:
-    sys.exit(status=status)
+if args.run_cmd:
+    # Installing HAProxy server
+    print "Installing HAProxy server"
+    status = subprocess.call("yum install -y haproxy", shell=True)
+    if status != 0:
+        sys.exit(status)
 
 # use the CURL class to determine the VERSION number first
-curl_api = CMAPI(args.cm_host+":7180", args.cm_user, args.cm_pass)
+curl_api = CMAPI(args.cm_host, args.cm_user, args.cm_pass)
 
 client = APIClient(
     args.cm_host, args.cm_user, args.cm_pass,
-    version=str(curl_api.version)[1:],
+    version=curl_api.get_version_number(),
     cluster_name=args.cluster_name
 )
 
@@ -46,31 +42,43 @@ i = 1
 for role in roles:
     if str(role.name).find('IMPALAD') >= 0:
         # building the load balancer hosts entries for HAProxy config file
-        impala_shell_conf.append("%s %s %s:21000" % ("server", "impala_" + str(i), client.api.get_host(role.hostRef.hostId).hostname))
-        impala_shell_jdbc.append("%s %s %s:21050" % ("server", "impala_" + str(i), client.api.get_host(role.hostRef.hostId).hostname))
+        impala_shell_conf.append(
+            "%s %s %s:21000" % (
+                "server",
+                "impala_" + str(i),
+                client.api.get_host(role.hostRef.hostId).hostname)
+        )
+        impala_shell_jdbc.append(
+            "%s %s %s:21050" % (
+                "server",
+                "impala_" + str(i),
+                client.api.get_host(role.hostRef.hostId).hostname)
+        )
         i = i + 1
 
-haproxy_config = open('data/haproxy.cfg', 'r').read()
-haproxy_config =  haproxy_config % ("\n    ".join(impala_shell_conf), "\n    ".join(impala_shell_jdbc))
+if args.run_cmd:
+    haproxy_config = open('data/haproxy.cfg', 'r').read()
+    haproxy_config =  haproxy_config % ("\n    ".join(impala_shell_conf), "\n    ".join(impala_shell_jdbc))
 
-haproxy_file_path = '/etc/haproxy/haproxy.cfg'
-print "Updating HAProxy configuration files under " + haproxy_file_path
-if os.path.exists(haproxy_file_path):
-    # backup first
-    shutil.copyfile(haproxy_file_path, haproxy_file_path + '.bak')
-    # write to file
-    f = open(haproxy_file_path, 'w')
-    f.write(haproxy_config)
-    f.close()
+    haproxy_file_path = '/etc/haproxy/haproxy.cfg'
+    print "Updating HAProxy configuration files under " + haproxy_file_path
+    if os.path.exists(haproxy_file_path):
+        # backup first
+        shutil.copyfile(haproxy_file_path, haproxy_file_path + '.bak')
+        # write to file
+        f = open(haproxy_file_path, 'w')
+        f.write(haproxy_config)
+        f.close()
 
 # enable load balancing in Impala
 print "Updating Impala configurations"
 client.enable_impala_vip(args.cm_host)
 
-print "Restarting HAProxy services"
-status = subprocess.call("haproxy -f /etc/haproxy/haproxy.cfg", shell=True)
-if status != 0:
-    sys.exit(status=status)
+if args.run_cmd:
+    print "Restarting HAProxy services"
+    status = subprocess.call("haproxy -f /etc/haproxy/haproxy.cfg", shell=True)
+    if status != 0:
+        sys.exit(status)
 
 print "Restarting Impala services"
 cmd = impala_service.restart()

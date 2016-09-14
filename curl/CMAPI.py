@@ -5,13 +5,27 @@ import importlib
 
 class CMAPI:
     def __init__(self, host, username, password):
+        self.DEFAULT_HTTP_PORT = 7180
+        self.DEFAULT_HTTPS_PORT = 7183
         self.SERVICE_HIVE = "Hive"
         self.SERVICE_IMPALA = "Impala"
         self.SERVICE_SOLR = "Solr"
         self.SERVICE_HUE = "Hue"
         self.SERVICES = [self.SERVICE_HIVE, self.SERVICE_IMPALA, self.SERVICE_SOLR, self.SERVICE_HUE]
 
-        self.host = host
+        urls = str(host).split(':')
+        if len(urls) == 3:
+            self.host = host
+        elif len(urls) == 2:
+            if urls[0] == 'https':
+                self.host = host + ':' + str(self.DEFAULT_HTTPS_PORT)
+            else:
+                self.host = host + ':' + str(self.DEFAULT_HTTP_PORT)
+        elif len(urls) == 1:
+            self.host = host + ':' + str(self.DEFAULT_HTTP_PORT)
+        else:
+            raise Exception("Invalid host: %s passed" % (host))
+
         self.username = username
         self.password = password
         self.service_name = None
@@ -19,7 +33,7 @@ class CMAPI:
         self.cluster_name = None
         self.service_names = {}
         self.service_type = None
-        self.version = 12
+        self.version = 'v12'
         self.init()
 
     def init(self):
@@ -77,6 +91,9 @@ class CMAPI:
         url = "{0}/api/version".format(self.host)
         return self.curl_get(url)
 
+    def get_version_number(self):
+        return self.version[1:]
+
     def get_cluster_name(self):
         url = "{0}/clusters".format(self.api_url)
         data = json.loads(self.curl_get(url))
@@ -102,4 +119,3 @@ class CMAPI:
                 client = class_(self)
 
                 client.enable_sentry()
-

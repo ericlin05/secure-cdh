@@ -1,14 +1,10 @@
 from api.APIClient import APIClient
 from curl.CMAPI import CMAPI
-from argparse import ArgumentParser
+from lib.CommonArgumentParser import CommonArgumentParser
 
-arg_parser = ArgumentParser(description='This script enables Sentry for a given cluster in CM')
-arg_parser.add_argument('cm_host', action="store",
-                        help='The full CM host URL including the port number at the end')
-arg_parser.add_argument('--cm-user', action="store", dest="cm_user", default="admin",
-                        help='The username to log into CM')
-arg_parser.add_argument('--cm-pass', action="store", dest="cm_pass", default="admin",
-                        help='The password to log into CM')
+arg_parser = CommonArgumentParser(description='This script enables Kerberos for a given cluster in CM. ' +
+                                  'This assumes that KDC and Kerberos clients are installed correctly ' +
+                                  'and kerberos admin principal has been created.')
 
 arg_parser.add_argument('kdc_master', action="store",
                         help='The KDC master hostname')
@@ -19,17 +15,15 @@ arg_parser.add_argument('--kdc-pass', action="store", default="cloudera", dest="
                         help='The KDC admin principal password, default to "cloudera"')
 arg_parser.add_argument('--krb-realm', action="store", default="HADOOP", dest="krb_realm",
                         help='The KDC REALM, default to HADOOP')
-arg_parser.add_argument('--cluster-name', action="store", dest="cluster_name",
-                        help='The name of the cluster you want to update, default to "None"')
 
 args = arg_parser.parse_args()
 
 # use the CURL class to determine the VERSION number first
-curl_api = CMAPI(args.cm_host+":7180", args.cm_user, args.cm_pass)
+curl_api = CMAPI(args.cm_host, args.cm_user, args.cm_pass)
 
 client = APIClient(
     args.cm_host, args.cm_user, args.cm_pass,
-    version=str(curl_api.version)[1:],
+    version=curl_api.get_version_number(),
     cluster_name=args.cluster_name
 )
 

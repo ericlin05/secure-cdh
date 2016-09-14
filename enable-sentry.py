@@ -1,26 +1,16 @@
 import sys, subprocess
 from api.APIClient import APIClient
 from curl.CMAPI import CMAPI
-from argparse import ArgumentParser
+from lib.CommonArgumentParser import CommonArgumentParser
 
 """
 This script follows the instructions on the following page to enable Sentry in CDH using CM API:
 http://www.cloudera.com/documentation/enterprise/latest/topics/sg_sentry_service_config.html
 """
 
-arg_parser = ArgumentParser(description='This script enables Sentry for a given cluster in CM')
-arg_parser.add_argument('cm_host', action="store",
-                        help='The full CM host URL including the port number at the end')
-arg_parser.add_argument('--cm-user', action="store", dest="cm_user", default="admin",
-                        help='The username to log into CM')
-arg_parser.add_argument('--cm-pass', action="store", dest="cm_pass", default="admin",
-                        help='The password to log into CM')
-arg_parser.add_argument('--cluster-name', action="store", dest="cluster_name",
-                        help='The name of the cluster you want to update')
+arg_parser = CommonArgumentParser(description='This script enables Sentry for a given cluster in CM')
 arg_parser.add_argument('--skip-hdfs-update', action="store_false", dest="hdfs_update",
                         help='Do not trigger "hdfs" commands to update hive warehouse')
-arg_parser.add_argument('--hdfs-update', action="store_true", dest="hdfs_update",
-                        help='Trigger "hdfs" commands to update hive warehouse\'s permissions')
 arg_parser.set_defaults(hdfs_update=True)
 args = arg_parser.parse_args()
 
@@ -54,14 +44,14 @@ if args.hdfs_update:
         raise Exception(message)
 
 # use the CURL class to determine the VERSION number first
-curl_api = CMAPI(args.cm_host+":7180", args.cm_user, args.cm_pass)
+curl_api = CMAPI(args.cm_host, args.cm_user, args.cm_pass)
 
 print "Current CM API version: " + curl_api.version
 
 print "Updating CM configurations.."
 api = APIClient(
     args.cm_host, args.cm_user, args.cm_pass,
-    version=str(curl_api.version)[1:],
+    version=curl_api.get_version_number(),
     cluster_name=args.cluster_name
 )
 
