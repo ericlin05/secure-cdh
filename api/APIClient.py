@@ -1,6 +1,7 @@
 from cm_api.api_client import ApiResource
 from cm_api.api_client import API_CURRENT_VERSION
 from ImpalaAPIClient import ImpalaAPIClient
+from HiveAPIClient import HiveAPIClient
 
 import importlib
 
@@ -52,6 +53,16 @@ class APIClient:
 
         return None
 
+    def get_hiveserver2_service(self):
+        """
+        This function returns the hiveserver2 service instance
+        :return: boolean
+        """
+        if self.SERVICE_HIVE in self.services:
+            return self.services[self.SERVICE_HIVE]
+
+        return None
+
     def enable_sentry(self):
         service_list = [
             self.SERVICE_HIVE,
@@ -91,3 +102,7 @@ class APIClient:
     def disable_impala_vip(self):
         impala_service = self.get_impala_service()
         ImpalaAPIClient(impala_service).disable_load_balancer()
+
+    def hiveserver2_create_role(self, host, i):
+        hive_service = self.get_hiveserver2_service()
+        HiveAPIClient(hive_service).add_hs2_role(host, i)

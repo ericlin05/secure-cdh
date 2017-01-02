@@ -1,3 +1,5 @@
+import hashlib
+import time
 
 class HiveAPIClient:
 
@@ -33,3 +35,7 @@ class HiveAPIClient:
                         'hiveserver2_enable_impersonation': False
                     })
                 break
+
+    def add_hs2_role(self, host, i):
+        s = hashlib.md5(time.strftime("%d/%m/%Y %H:%M:%S")).hexdigest()
+        self.service.create_role('hive1-HIVESERVER2-' + str(i), 'HIVESERVER2', host.hostId)
