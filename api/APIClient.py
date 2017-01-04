@@ -106,3 +106,11 @@ class APIClient:
     def hiveserver2_create_role(self, host, i):
         hive_service = self.get_hiveserver2_service()
         HiveAPIClient(hive_service).add_hs2_role(host, i)
+
+    def enable_hive_vip(self, host):
+        service = self.get_hiveserver2_service()
+        HiveAPIClient(service).enable_load_balancer(host)
+
+    def disable_hive_vip(self):
+        service = self.get_hiveserver2_service()
+        HiveAPIClient(service).disable_load_balancer()

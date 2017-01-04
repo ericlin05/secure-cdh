@@ -11,16 +11,16 @@ arg_parser.init()
 arg_parser.add_argument('hs2_hosts', action="store",
                                      help='The full CM host URL including the port number at the end')
 
+arg_parser.add_argument('--proxy-host', action="store", dest="proxy_host",
+                        help='The full URL for HAProxy host')
+
 arg_parser.add_argument('--skip-shell-command', action="store_true", dest="run_cmd",
                         help='Whether or not to skip shell commands, like "yum install" etc.')
 
 args = arg_parser.parse_args()
-if args.run_cmd:
-    # Installing HAProxy server
-    print "Installing HAProxy server"
-    status = subprocess.call("yum install -y haproxy", shell=True)
-    if status != 0:
-        sys.exit(status)
+
+if args.proxy_host is None:
+    args.proxy_host = args.cm_host
 
 # use the CURL class to determine the VERSION number first
 curl_api = CMAPI(args.cm_host, args.cm_user, args.cm_pass)
@@ -58,6 +58,46 @@ else:
             i = i + 1
         else:
             print "Host: " + host + " already has HS2"
+
+hive_haproxy_conf = []
+a = 1
+for host in hs2_hosts:
+    # building the load balancer hosts entries for HAProxy config file
+    hive_haproxy_conf.append(
+        "%s %s %s:10000" % (
+            "server",
+            "hive_" + str(a),
+            host
+        )
+    )
+    a = a + 1
+print hive_haproxy_conf
+if args.run_cmd:
+    haproxy_config = open('data/haproxy-hive.cfg', 'r').read()
+    print haproxy_config
+    haproxy_config =  haproxy_config % ("\n    ".join(hive_haproxy_conf))
+
+    haproxy_file_path = '/etc/haproxy/haproxy.cfg'
+    print "Updating HAProxy configuration files under " + haproxy_file_path
+    if os.path.exists(haproxy_file_path):
+        # backup first
+        shutil.copyfile(haproxy_file_path, haproxy_file_path + '.bak')
+        # write to file
+        f = open(haproxy_file_path, 'w')
+        f.write(haproxy_config)
+        f.close()
+
+
+print "Updating Hive configurations"
+client.enable_hive_vip(args.proxy_host)
+
+if args.run_cmd:
+    print "Restarting HAProxy services"
+    status = subprocess.call("haproxy -f /etc/haproxy/haproxy.cfg", shell=True)
+    if status != 0:
+        sys.exit(status)
+
+
 
 print "Restarting Hive services"
 cmd = client.get_hiveserver2_service().restart()

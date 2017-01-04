@@ -5,6 +5,7 @@ class HiveAPIClient:
 
     def __init__(self, hive_service):
         self.service = hive_service
+        self.DEFAULT_HAPROXY_PORT = 10001
 
     def enable_sentry(self):
         """
@@ -39,3 +40,22 @@ class HiveAPIClient:
     def add_hs2_role(self, host, i):
         s = hashlib.md5(time.strftime("%d/%m/%Y %H:%M:%S")).hexdigest()
         self.service.create_role('hive1-HIVESERVER2-' + str(i), 'HIVESERVER2', host.hostId)
+
+    def enable_load_balancer(self, host):
+        role_groups = self.service.get_all_role_config_groups()
+        for role_group in role_groups:
+            print role_groups
+            if str(role_group.name).find('HIVESERVER2') > 0:
+                role_group.update_config({
+                    'hiverserver2_load_balancer': "%s:%s" % (host, self.DEFAULT_HAPROXY_PORT)
+                })
+                break
+
+    def disable_load_balancer(self):
+        role_groups = self.service.get_all_role_config_groups()
+        for role_group in role_groups:
+            if str(role_group.name).find('HIVESERVER2') > 0:
+                role_group.update_config({
+                    'hiverserver2_load_balancer': ""
+                })
+                break
