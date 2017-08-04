@@ -9,6 +9,7 @@ http://www.cloudera.com/documentation/enterprise/latest/topics/sg_sentry_service
 """
 
 arg_parser = CommonArgumentParser(description='This script enables Sentry for a given cluster in CM')
+arg_parser.init()
 arg_parser.add_argument('--skip-hdfs-update', action="store_false", dest="hdfs_update",
                         help='Do not trigger "hdfs" commands to update hive warehouse')
 arg_parser.set_defaults(hdfs_update=True)
@@ -51,7 +52,6 @@ print "Current CM API version: " + curl_api.version
 print "Updating CM configurations.."
 api = APIClient(
     args.cm_host, args.cm_user, args.cm_pass,
-    version=curl_api.get_version_number(),
     cluster_name=args.cluster_name
 )
 

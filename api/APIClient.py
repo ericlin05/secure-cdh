@@ -1,5 +1,4 @@
 from cm_api.api_client import ApiResource
-from cm_api.api_client import API_CURRENT_VERSION
 from ImpalaAPIClient import ImpalaAPIClient
 from HiveAPIClient import HiveAPIClient
 
@@ -7,7 +6,6 @@ import importlib
 
 class APIClient:
     def __init__(self, cm_host, cm_user, cm_pass,
-                 version=API_CURRENT_VERSION,
                  cluster_name=None):
         self.SERVICE_HIVE   = 'HIVE'
         self.SERVICE_HUE    = 'HUE'
@@ -23,7 +21,6 @@ class APIClient:
             cm_host,
             username=cm_user,
             password=cm_pass,
-            version=version
         )
 
         self.cluster = None
