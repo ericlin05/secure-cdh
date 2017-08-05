@@ -1,6 +1,7 @@
 from cm_api.api_client import ApiResource
 from ImpalaAPIClient import ImpalaAPIClient
 from HiveAPIClient import HiveAPIClient
+from HbaseAPIClient import HbaseAPIClient
 
 import importlib
 
@@ -40,6 +41,13 @@ class APIClient:
         """
         return self.SERVICE_SENTRY in self.services
 
+    def has_hbase(self):
+        """
+        This function checks if hbase service is available in the cluster
+        :return: boolean
+        """
+        return self.SERVICE_HBASE in self.services
+
     def get_impala_service(self):
         """
         This function checks if sentry service is available in the cluster
@@ -57,6 +65,16 @@ class APIClient:
         """
         if self.SERVICE_HIVE in self.services:
             return self.services[self.SERVICE_HIVE]
+
+        return None
+
+    def get_hbase_service(self):
+        """
+        This function returns the hbase service instance
+        :return: boolean
+        """
+        if self.SERVICE_HBASE in self.services:
+            return self.services[self.SERVICE_HBASE]
 
         return None
 
@@ -111,3 +129,7 @@ class APIClient:
     def disable_hive_vip(self):
         service = self.get_hiveserver2_service()
         HiveAPIClient(service).disable_load_balancer()
+
+    def enable_hbase_authorization(self):
+        service = self.get_hbase_service()
+        HbaseAPIClient(service).enable_authorization()
