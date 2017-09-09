@@ -34,6 +34,13 @@ class APIClient:
         for service in self.cluster.get_all_services():
             self.services[service.type] = service
 
+    @staticmethod
+    def get_api_client(cluster_name, cm_host, cm_user, cm_pass):
+        return APIClient(
+            cm_host, cm_user, cm_pass,
+            cluster_name=cluster_name
+        )
+
     def has_sentry(self):
         """
         This function checks if sentry service is available in the cluster
