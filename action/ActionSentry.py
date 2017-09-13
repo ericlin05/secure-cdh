@@ -10,7 +10,6 @@ class ActionSentry:
     http://www.cloudera.com/documentation/enterprise/latest/topics/sg_sentry_service_config.html
     """
     def enable(self):
-
         args = self.arg_parser.parse_args()
 
         """

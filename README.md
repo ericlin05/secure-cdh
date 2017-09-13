@@ -52,19 +52,21 @@ python main.py sentry --cluster-name <cluster_name> \
 ### Enable Impala HA
 
 ```
-python main.py impala --enable-ha --cluster-name <cluster_name> \
-                                  --cm-user <cm-user> \
-                                  --cm-pass <cm-pass> \
-                                  <cm-host>
+python main.py impala --action enable-ha
+                      --cluster-name <cluster_name> \
+                      --cm-user <cm-user> \
+                      --cm-pass <cm-pass> \
+                      <cm-host>
 ```
 
 ### Disable Impala HA
 
 ```
-python main.py impala --disable-ha --cluster-name <cluster_name> \
-                                   --cm-user <cm-user> \
-                                   --cm-pass <cm-pass> \
-                                   <cm-host>
+python main.py impala  --action disable-ha
+                       --cluster-name <cluster_name> \
+                       --cm-user <cm-user> \
+                       --cm-pass <cm-pass> \
+                       <cm-host>
 ```
 
 ### Enable Hive HA
@@ -83,4 +85,15 @@ python main.py hbase --cluster-name <cluster_name> \
                      --cm-user <cm-user> \
                      --cm-pass <cm-pass> \
                      <cm-host>
+```
+
+### Enable Sentry HDFS Sync
+
+```
+python main.py hdfs --action sentry-sync
+                    --prefixes '/path/to/prefix1,/path/to/prefix2'
+                    --cluster-name <cluster_name> \
+                    --cm-user <cm-user> \
+                    --cm-pass <cm-pass> \
+                    <cm-host>
 ```

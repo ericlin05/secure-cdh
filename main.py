@@ -6,6 +6,7 @@ from action.ActionSentry import ActionSentry
 from action.ActionHive import ActionHive
 from action.ActionHBase import ActionHBase
 from action.ActionKerberos import ActionKerberos
+from action.ActionHdfs import ActionHdfs
 
 arg_parser = CommonArgumentParser()
 args = arg_parser.init().parse_args()
@@ -31,5 +32,8 @@ elif args.component == 'hive' and args.action == 'enable-ha':
 elif args.component == 'hbase' and args.action == 'enable-auth':
     action = ActionHBase(arg_parser, client)
     action.enable_auth()
+elif args.component == 'hdfs' and args.action == 'sentry-sync':
+    action = ActionHdfs(arg_parser, client)
+    action.sentry_sync()
 else:
     print "Invalid component and action parameters."

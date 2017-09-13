@@ -2,6 +2,7 @@ from cm_api.api_client import ApiResource
 from ImpalaAPIClient import ImpalaAPIClient
 from HiveAPIClient import HiveAPIClient
 from HbaseAPIClient import HbaseAPIClient
+from HdfsAPIClient import HdfsAPIClient
 
 import importlib
 
@@ -85,6 +86,16 @@ class APIClient:
 
         return None
 
+    def get_hdfs_service(self):
+        """
+        This function returns the hdfs service instance
+        :return: boolean
+        """
+        if self.SERVICE_HDFS in self.services:
+            return self.services[self.SERVICE_HDFS]
+
+        return None
+
     def enable_sentry(self):
         service_list = [
             self.SERVICE_HIVE,
@@ -140,3 +151,7 @@ class APIClient:
     def enable_hbase_authorization(self):
         service = self.get_hbase_service()
         HbaseAPIClient(service).enable_authorization()
+
+    def enable_sentry_hdfs_sync(self, prefixes):
+        service = self.get_hdfs_service()
+        HdfsAPIClient(service).sentry_sync(prefixes)

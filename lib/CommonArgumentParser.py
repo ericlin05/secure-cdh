@@ -45,6 +45,16 @@ class CommonArgumentParser(ArgumentParser):
         hbase_parser.set_defaults(action='enable-auth')
 
         ################################################
+        # HDFS related parsers
+        hdfs_parser = subparsers.add_parser('hdfs')
+        hdfs_parser.set_defaults(component='hdfs')
+        # currently only supports enabling hbase authorization, so no special actions required
+        hdfs_parser.add_argument('--action', action="store", dest="action",
+                                   choices=['sentry-sync'], help='To enable Sentry HDFS Sync')
+        hdfs_parser.add_argument('--prefixes', action="store", dest="sync_prefixes", default="",
+                                 help="List of HDFS paths for the sentry sync prefix")
+
+        ################################################
         # Kerberos related parsers
         kerberos_parser = subparsers.add_parser('kerberos')
         kerberos_parser.set_defaults(component='kerberos')
