@@ -28,12 +28,6 @@ curl -X PUT -H "Content-Type:application/json" -u $CM_USER:$CM_PASS $INSECURE \
   -d "{ \"items\": [ { \"name\": \"ssl_certificate\", \"value\": \"$CERT_DIR/server.pem\" }, { \"name\": \"ssl_certificate_key\", \"value\": \"$CERT_DIR/server.key\" } ] }" \
   "$API_URL/clusters/$CLUSTER/services/$SERVICE/roleConfigGroups/$ROLE_GROUP_ID/config"
 
-#echo ""
-#echo "Restarting Cluster"
-#curl -X POST -H "Content-Type:application/json" -u $CM_USER:$CM_PASS $INSECURE \
-#  -d "{ \"restartOnlyStaleServices\": \"true\", \"redeployClientConfiguration\": \"true\" }" \
-#  "$API_URL/clusters/$CLUSTER/commands/restart"
-
 echo ""
 echo "DONE"
 echo ""

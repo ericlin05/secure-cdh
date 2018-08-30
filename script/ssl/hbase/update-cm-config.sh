@@ -35,13 +35,6 @@ curl -X PUT -H "Content-Type:application/json" -u $CM_USER:$CM_PASS $INSECURE \
   -d "{ \"items\": [ { \"name\": \"hbase_thriftserver_http_keystore_file\", \"value\": \"$CERT_DIR/server.jks\" }, { \"name\": \"hbase_thriftserver_http_keystore_keypassword\", \"value\": \"$KEYSTORE_PASS\" }, { \"name\": \"hbase_thriftserver_http_keystore_password\", \"value\": \"$KEYSTORE_PASS\" }, { \"name\": \"hbase_thriftserver_http_use_ssl\", \"value\": \"true\" } ] }" \
   "$API_URL/clusters/$CLUSTER/services/$SERVICE/roleConfigGroups/$ROLE_GROUP_ID/config"
 
-
-#echo ""
-#echo "Restarting Cluster"
-#curl -X POST -H "Content-Type:application/json" -u $CM_USER:$CM_PASS $INSECURE \
-#  -d "{ \"restartOnlyStaleServices\": \"true\", \"redeployClientConfiguration\": \"true\" }" \
-#  "$API_URL/clusters/$CLUSTER/commands/restart"
-
 echo ""
 echo "DONE"
 echo ""

@@ -19,12 +19,6 @@ curl -X PUT -H "Content-Type:application/json" -u $CM_USER:$CM_PASS $INSECURE \
   -d "{ \"items\": [ { \"name\": \"ssl_server_keystore_location\", \"value\": \"$CERT_DIR/server.jks\" }, { \"name\": \"ssl_server_keystore_keypassword\", \"value\": \"$KEYSTORE_PASS\" }, { \"name\": \"ssl_server_keystore_password\", \"value\": \"$KEYSTORE_PASS\" }, { \"name\": \"ssl_client_truststore_password\", \"value\": \"$TRUSTSTORE_PASS\" }, { \"name\": \"ssl_client_truststore_location\", \"value\": \"$JAVA_HOME/jre/lib/security/jssecacerts\" }, { \"name\": \"hadoop_secure_web_ui\", \"value\": \"true\" }, { \"name\": \"hdfs_hadoop_ssl_enabled\", \"value\": \"true\" } ] }" \
   "$API_URL/clusters/$CLUSTER/services/$SERVICE/config"
 
-#echo ""
-#echo "Restarting Cluster"
-#curl -X POST -H "Content-Type:application/json" -u $CM_USER:$CM_PASS $INSECURE \
-#  -d "{ \"restartOnlyStaleServices\": \"true\", \"redeployClientConfiguration\": \"true\" }" \
-#  "$API_URL/clusters/$CLUSTER/commands/restart"
-
 echo ""
 echo "DONE"
 echo ""

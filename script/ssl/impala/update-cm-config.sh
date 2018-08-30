@@ -44,11 +44,5 @@ curl -X PUT -H "Content-Type:application/json" -u $CM_USER:$CM_PASS $INSECURE \
   "$API_URL/clusters/$CLUSTER/services/$SERVICE/roleConfigGroups/$ROLE_GROUP_ID/config"
 
 echo ""
-echo "Restarting Cluster"
-#curl -X POST -H "Content-Type:application/json" -u $CM_USER:$CM_PASS $INSECURE \
-#  -d "{ \"restartOnlyStaleServices\": \"true\", \"redeployClientConfiguration\": \"true\" }" \
-#  "$API_URL/clusters/$CLUSTER/commands/restart"
-
-echo ""
 echo "DONE"
 echo ""
