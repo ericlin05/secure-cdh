@@ -27,3 +27,6 @@ JAVA_HOME=`readlink -e /etc/alternatives/java | sed 's/\/jre\/bin\/java//g'`
 CERT_DIR="/opt/cloudera/security/jks"
 REMOTE_DIR="/tmp/certificate-install"
 
+KEYSTORE_PASS="cloudera"
+TRUSTSTORE_PASS="changeit"
+
