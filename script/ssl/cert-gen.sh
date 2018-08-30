@@ -7,7 +7,7 @@ TYPE="$1"
 
 BASE_DIR=$(dirname $0)
 CA_DIR=$BASE_DIR/ca
-source $BASE_DIR/../../config.sh ""
+source $BASE_DIR/../config.sh ""
 
 echo "Extracting Java Home path at: $JAVA_HOME"
 

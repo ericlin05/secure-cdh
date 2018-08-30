@@ -2,10 +2,13 @@
 
 set -e
 
-HOST_STRING="$1"
-HOSTS=(`echo $HOST_STRING | sed 's/,/\n/g'`)
+HOST="$1"
+TLS_ENABLED="$2"
 
-for host in "${HOSTS[@]}"
+BASE_DIR=$(dirname $0)
+source $BASE_DIR/../../config.sh $HOST $TLS_ENABLED
+
+for host in "${CLUSTER_HOSTS[@]}"
 do
   echo ""
   echo "========================================================"

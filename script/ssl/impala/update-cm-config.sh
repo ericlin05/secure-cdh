@@ -16,7 +16,7 @@ echo ""
 echo "Updating Impala SSL configurations"
 echo "$API_URL/cm/config $CM_USER:$CM_PASS $INSECURE"
 curl -X PUT -H "Content-Type:application/json" -u $CM_USER:$CM_PASS $INSECURE \
-  -d "{ \"items\": [ { \"name\": \"client_services_ssl_enabled\", \"value\": \"true\" }, { \"name\": \"ssl_server_certificate\", \"value\": \"$CERT_DIR/server.pem\" }, { \"name\": \"ssl_private_key\", \"value\": \"$CERT_DIR/server.key\" }, { \"name\": \"ssl_private_key_password\", \"value\": \"$KEYSTORE_PASS\" }, { \"name\": \"ssl_client_ca_certificate\", \"value\": \"$CERT_DIR/allserver.pem\" } ] }" \
+  -d "{ \"items\": [ { \"name\": \"client_services_ssl_enabled\", \"value\": \"true\" }, { \"name\": \"ssl_server_certificate\", \"value\": \"$CERT_DIR/server.pem\" }, { \"name\": \"ssl_private_key\", \"value\": \"$CERT_DIR/server.key\" }, { \"name\": \"ssl_private_key_password\", \"value\": \"$KEYSTORE_PASS\" }, { \"name\": \"ssl_client_ca_certificate\", \"value\": \"$CERT_DIR/$CA_CERTIFICATE\" } ] }" \
   "$API_URL/clusters/$CLUSTER/services/$SERVICE/config"
 
 echo ""

@@ -7,12 +7,11 @@ CM_PASS="admin"
 
 
 if [ "$host" != "" ]; then
-echo "HOST  IS : $host #######"
   CM_URL="http://$host:7180"
   INSECURE=""
 
   if [ $is_secure == 1 ]; then
-    CM_URL="https://$HOST:7183"
+    CM_URL="https://$host:7183"
     INSECURE=" --insecure"
   fi
 
@@ -21,6 +20,8 @@ echo "HOST  IS : $host #######"
 
   API_URL="$CM_URL/api/$VERSION"
   echo "API Url: $API_URL"
+
+  CLUSTER_HOSTS=(`curl -u $CM_USER:$CM_PASS "$API_URL/hosts" $INSECURE | grep 'hostname' | sed -e 's/.* : "\(.*\)".*/\1/g'`)
 fi 
 
 JAVA_HOME=`readlink -e /etc/alternatives/java | sed 's/\/jre\/bin\/java//g'`
@@ -29,4 +30,7 @@ REMOTE_DIR="/tmp/certificate-install"
 
 KEYSTORE_PASS="cloudera"
 TRUSTSTORE_PASS="changeit"
+
+# concatenated pem files from each host
+CA_CERTIFICATE=ca-certificate.pem
 
